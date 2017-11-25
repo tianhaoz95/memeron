@@ -1,1 +1,1 @@
-web: python3 pyServer/manage.py runserver
+web: gunicorn pyServer/pyServer.wsgi --log-file -

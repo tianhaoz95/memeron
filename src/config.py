@@ -18,7 +18,7 @@ resolution = (width, height)
 
 # neural network parameters
 conv_input_shape = (width, height, 3)
-conv_kernel = (15, 15)
+conv_kernel = (5, 5)
 conv_pool_size = (3, 3)
 conv_dropout = 0.25
 fc_dropout = 0.25

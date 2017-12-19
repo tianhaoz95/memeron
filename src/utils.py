@@ -11,6 +11,7 @@ from socket import timeout
 from random import randint
 import uuid
 import validators
+import math
 
 def download_img(url, path):
     try:
@@ -164,7 +165,7 @@ def random_sample(x, y, sample_size):
     sampled_x = []
     sampled_y = []
     for i in range(sample_size):
-        idx = randint(0, size-1)
+        idx = math.floor(np.random.random_sample() * size)
         sampled_x.append(x[idx,:])
         sampled_y.append(y[idx,:])
     output_x = np.array(sampled_x)

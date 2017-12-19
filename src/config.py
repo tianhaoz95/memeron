@@ -1,5 +1,5 @@
 # notification parameters
-slack_api = 'xoxp-288942247782-288076142754-288116646020-dbcb3a6cf3ccb37631d992f2a515bbac'
+slack_api = 'xoxp-288942247782-288076142754-288698076356-47d94f3ee73731809fc3d2bc0f8e191f'
 
 # utility parameters
 add_samples_dir = 'addsample/samples.txt'
@@ -28,11 +28,11 @@ decay = 1e-6
 momentum = 0.9
 train_batch_size = 1
 test_batch_size = 1
-epochs = 3
+epochs = 10
 conv_layers = [64, 64]
 fc_layers = [32]
 iter_cnt = 30
-sample_size = 50
+sample_size = 20
 bloss = 'binary_crossentropy'
 closs = 'categorical_crossentropy'
 

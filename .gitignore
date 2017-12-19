@@ -1,3 +1,9 @@
-/.env
+/virenv
 /data
 .DS_Store
+/src/__pycache__
+/tmp
+/dataset
+/model/*.json
+/model/*.hdf5
+/model/*.h5

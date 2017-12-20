@@ -1,7 +1,10 @@
 # notification parameters
 slack_api = 'xoxp-288942247782-288076142754-288698076356-47d94f3ee73731809fc3d2bc0f8e191f'
+notification = False
 
 # utility parameters
+mode = 'overnight'
+# mode = 'quick'
 add_samples_dir = 'addsample/samples.txt'
 tmp_dir = 'tmp'
 dataset_dir = 'dataset'
@@ -11,30 +14,20 @@ saved_weights_filename = 'js_model_weights.hdf5'
 saved_structure_filename = 'js_model_structure.json'
 meta_dir = 'src/source.json'
 backup_dir = 'src/backup.json'
+plot_dir = 'plots'
 label_encoder = {'meme': [1], 'nonmeme': [0]}
-width = 200
-height = 200
+width = 100
+height = 100
 resolution = (width, height)
 
 # neural network parameters
 conv_input_shape = (width, height, 3)
-conv_kernel = (5, 5)
-conv_pool_size = (3, 3)
-conv_dropout = 0.25
-fc_dropout = 0.25
-output_size = 1
-step_size = 0.05
-decay = 1e-6
-momentum = 0.9
-train_batch_size = 1
-test_batch_size = 1
-epochs = 10
-conv_layers = [64, 64]
-fc_layers = [32]
-iter_cnt = 30
-sample_size = 20
-bloss = 'binary_crossentropy'
-closs = 'categorical_crossentropy'
+train_batch_size = 10
+test_batch_size = 10
+epochs = 1
+iter_cnt = 100
+checkpoint = 10
+sample_size = 50
 
 # grid search parameters
 conv_layer_cnts = [2, 3, 4, 5, 6, 7]

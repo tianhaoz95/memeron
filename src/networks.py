@@ -6,67 +6,58 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.optimizers import SGD
 from .config import *
 from .utils import *
-from .notification import *
-
-def grid_search(train_x, train_y, test_x, test_y):
-    max_score = 0
-    max_model = None
-    max_id = "na"
-    for conv_layer_cnt in conv_layer_cnts:
-        for fc_layer_cnt in fc_layer_cnts:
-            for neuron_cnt in neuron_cnts:
-                model = Sequential()
-                model.add(Conv2D(neuron_cnt, conv_kernel, activation='relu', input_shape=conv_input_shape))
-                for i in range(conv_layer_cnt):
-                    model.add(Conv2D(neuron_cnt, conv_kernel, activation='relu'))
-                    model.add(MaxPooling2D(pool_size=conv_pool_size))
-                model.add(Dropout(conv_dropout))
-                model.add(Flatten())
-                for i in range(fc_layer_cnt):
-                    model.add(Dense(neuron_cnt, activation='relu'))
-                model.add(Dropout(fc_dropout))
-                model.add(Dense(output_size, activation='softmax'))
-                sgd = SGD(lr=step_size, decay=decay, momentum=momentum, nesterov=True)
-                model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
-                model.fit(train_x, train_y, batch_size=train_batch_size, epochs=epochs)
-                score = model.evaluate(test_x, test_y, batch_size=test_batch_size)
-                print('current testing score: ', score)
-    print('grid search finished')
+import matplotlib.pyplot as plt
 
 def train_model(train_x, train_y, test_x, test_y):
     model_list = os.listdir(model_dir)
     model = None
+    train_scores = []
+    test_scores = []
     if saved_model_filename in model_list:
         print('found previous model, recovering ...')
         model = load_model(model_dir + '/' + saved_model_filename)
     else:
         print('no previous model exist, constructing new one ...')
         model = Sequential()
-        model.add(Conv2D(conv_layers[0], conv_kernel, activation='relu', input_shape=conv_input_shape))
-        for conv_layer in conv_layers[1:]:
-            model.add(Conv2D(conv_layer, conv_kernel, activation='relu'))
-            model.add(MaxPooling2D(pool_size=conv_pool_size))
-        model.add(Dropout(conv_dropout))
+        model.add(Conv2D(32, (3,3), activation='relu', input_shape=conv_input_shape))
+        model.add(Conv2D(32, (3,3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
+        model.add(Conv2D(64, (3, 3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
+        model.add(Conv2D(128, (3, 3), activation='relu'))
+        model.add(Conv2D(128, (3, 3), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+        model.add(Dropout(0.25))
         model.add(Flatten())
-        for fc_layer in fc_layers:
-            model.add(Dense(fc_layer, activation='relu'))
-        model.add(Dropout(fc_dropout))
-        model.add(Dense(output_size, activation='softmax'))
-        sgd = SGD(lr=step_size, decay=decay, momentum=momentum, nesterov=True)
-        loss = bloss
-        if train_y.shape[1] > 1:
-            loss = closs
-        model.compile(loss=loss, optimizer=sgd, metrics=['accuracy'])
+        model.add(Dense(256, activation='relu'))
+        model.add(Dropout(0.5))
+        model.add(Dense(1, activation='sigmoid'))
+        sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
     for i in range(iter_cnt):
-        sampled_x, sampled_y = random_sample(train_x, train_y, sample_size)
-        print('sampled x shape: ', sampled_x.shape)
-        print('sampled y shape: ', sampled_y.shape)
-        model.fit(sampled_x, sampled_y, batch_size=train_batch_size, epochs=epochs)
-        score = model.evaluate(test_x, test_y, batch_size=test_batch_size)
-        print('current testing score: ', score)
-        msg = compose_iteration_msg(i+1, iter_cnt, score)
-        send_notification(msg)
+        print("running ", i, " out of ", iter_cnt, " iteration ...")
+        sampled_x = train_x
+        sampled_y = train_y
+        # print('sampled x shape: ', sampled_x.shape)
+        # print('sampled y shape: ', sampled_y.shape)
+        h = model.fit(x=sampled_x, y=sampled_y, batch_size=train_batch_size, epochs=epochs)
+        train_scores.extend(h.history)
+        if mode == 'quick':
+            score = model.evaluate(test_x, test_y, batch_size=test_batch_size)
+            print('current testing score: ', score)
+        if i % checkpoint == 0:
+            score = model.evaluate(test_x, test_y, batch_size=test_batch_size)
+            print('current testing score: ', score)
+            test_scores.append(score)
+        if notification:
+            from .notification import send_notification, compose_iteration_msg
+            msg = compose_iteration_msg(i+1, iter_cnt, score)
+            send_notification(msg)
         model.save(model_dir + '/' + saved_model_filename)
-        model.save_weights(model_dir + '/' + saved_weights_filename)
-        with open(model_dir + '/' + saved_structure_filename, 'w') as f:
-            f.write(model.to_json())
+    score = model.evaluate(test_x, test_y, batch_size=test_batch_size)
+    print('current testing score: ', score)
+    plot_learning_curve(train_scores, 'train_score.png')
+    plot_learning_curve(test_scores, 'test_score.png')

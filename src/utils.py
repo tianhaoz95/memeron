@@ -6,6 +6,7 @@ import urllib.request
 from .config import *
 from scipy.ndimage import imread
 from scipy.misc import imresize
+import matplotlib.pyplot as plt
 from random import shuffle
 from socket import timeout
 from random import randint
@@ -171,3 +172,20 @@ def random_sample(x, y, sample_size):
     output_x = np.array(sampled_x)
     output_y = np.array(sampled_y)
     return output_x, output_y
+
+def check_data(x, y, cnt):
+    size = x.shape[0]
+    for i in range(cnt):
+        idx = math.floor(np.random.random_sample() * size)
+        sample_x = x[idx,:]
+        sample_y = y[idx,0]
+        plt.figure()
+        plt.imshow(sample_x)
+        plt.title('y: ' + str(sample_y))
+        plt.show()
+
+def plot_learning_curve(scores, filename):
+    print('plotting learning curve ...')
+    plt.figure()
+    plt.plot(scores)
+    plt.savefig(plot_dir + '/'+ filename)

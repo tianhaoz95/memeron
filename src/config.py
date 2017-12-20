@@ -1,7 +1,3 @@
-# notification parameters
-slack_api = 'xoxp-288942247782-288076142754-288698076356-47d94f3ee73731809fc3d2bc0f8e191f'
-notification = False
-
 # utility parameters
 mode = 'overnight'
 # mode = 'quick'
@@ -15,10 +11,12 @@ saved_structure_filename = 'js_model_structure.json'
 meta_dir = 'src/source.json'
 backup_dir = 'src/backup.json'
 plot_dir = 'plots'
-label_encoder = {'meme': [1], 'nonmeme': [0]}
+label_encoder = {'meme': [1, 0], 'nonmeme': [0, 1]}
 width = 100
 height = 100
 resolution = (width, height)
+key_path = 'key.json'
+username = 'tianhaoz@umich.edu'
 
 # neural network parameters
 conv_input_shape = (width, height, 3)
@@ -26,7 +24,7 @@ train_batch_size = 10
 test_batch_size = 10
 epochs = 1
 iter_cnt = 100
-checkpoint = 10
+checkpoint = 5
 sample_size = 50
 
 # grid search parameters

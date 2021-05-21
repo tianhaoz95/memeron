@@ -24,7 +24,7 @@ requests==2.18.4
 scipy==1.0.0
 six==1.11.0
 slacker==0.9.60
-tensorflow==1.4.0
+tensorflow==2.5.0
 tensorflow-tensorboard==0.4.0rc3
 urllib3==1.22
 validators==0.12.0
